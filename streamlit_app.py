@@ -28,4 +28,4 @@ column_dtypes = [
 ]
 raw_df = dd.read_csv("/data-bigpool/largefraudmodel/data/DARPA_Intrusion_Detection/Training_data/First_week/monday/tcpdump.list.gz", compression='gzip',blocksize=None \
                     , dtype={ "Src_Port" : "string", "Dest_Port" : "string"}, sep='\s+', header=None, names=column_names)
-st.write(raw_df.head(5)
+st.write(raw_df.head(5))
