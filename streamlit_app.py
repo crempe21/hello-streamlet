@@ -12,29 +12,20 @@ forums](https://discuss.streamlit.io).
 
 In the meantime, below is an example of what you can do with just a few lines of code:
 """
+from dask.distributed import Client
 
-num_points = st.slider("Number of points in spiral", 1, 11000, 1100)
-num_turns = st.slider("Number of turns in spiral", 1, 300, 31)
+client = Client(n_workers=2, threads_per_worker=2, memory_limit="1GB")
+client
 
-indices = np.linspace(0, 1, num_points)
-theta = 2 * np.pi * num_turns * indices
-radius = indices
-
-x = radius * np.cos(theta)
-y = radius * np.sin(theta)
-
-df = pd.DataFrame({
-    "x": x,
-    "y": y,
-    "idx": indices,
-    "rand": np.random.randn(num_points),
-})
-
-st.altair_chart(alt.Chart(df, height=700, width=700)
-    .mark_point(filled=True)
-    .encode(
-        x=alt.X("x", axis=None),
-        y=alt.Y("y", axis=None),
-        color=alt.Color("idx", legend=None, scale=alt.Scale()),
-        size=alt.Size("rand", legend=None, scale=alt.Scale(range=[1, 150])),
-    ))
+import dask.dataframe as dd
+column_names = [
+    "idx","Start_Date", "Start_Time",  "Duration", 
+    "Serv", "Src_Port", "Dest_Port", "Src_IP", "Dest_IP", "Attack","Score_Name"
+]
+column_dtypes = [
+    "Start_Date", "Start_Time", "End_Time", "Duration", 
+    "Serv", "Src_Port", "Dest_Port", "Src_IP", "Dest_IP", "Attack","Score_Name"
+]
+raw_df = dd.read_csv("/data-bigpool/largefraudmodel/data/DARPA_Intrusion_Detection/Training_data/First_week/monday/tcpdump.list.gz", compression='gzip',blocksize=None \
+                    , dtype={ "Src_Port" : "string", "Dest_Port" : "string"}, sep='\s+', header=None, names=column_names)
+st.write(raw_df.head(5)
